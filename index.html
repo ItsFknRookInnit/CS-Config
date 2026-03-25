@@ -53,7 +53,7 @@
 
     <input type="file" id="iniUpload" accept=".ini,.txt" class="hidden" onchange="handleFileUpload(event)">
 
-    <!-- Enhanced Pro Header -->
+    <!-- Pro Header Section -->
     <header class="bg-slate-900 border-b border-slate-800 p-5 md:p-8 flex flex-col xl:flex-row justify-between items-center shrink-0 shadow-xl gap-6">
         <div class="flex items-center gap-6 w-full xl:w-auto justify-center xl:justify-start">
             <div class="bg-blue-600 p-3 md:p-4 rounded-2xl shadow-2xl shadow-blue-900/40">
@@ -81,27 +81,27 @@
             </div>
 
             <div class="flex gap-2 w-full md:w-auto">
-                <button onclick="expandAll()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm uppercase font-bold px-6 py-3 rounded-xl border-2 border-slate-700 transition-all flex-1">Expand</button>
-                <button onclick="collapseAll()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm uppercase font-bold px-6 py-3 rounded-xl border-2 border-slate-700 transition-all flex-1">Collapse</button>
+                <button onclick="expandAll()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm uppercase font-bold px-6 py-3 rounded-xl border-2 border-slate-700 transition-all flex-1">Expand All</button>
+                <button onclick="collapseAll()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm uppercase font-bold px-6 py-3 rounded-xl border-2 border-slate-700 transition-all flex-1">Collapse All</button>
             </div>
         </div>
     </header>
 
-    <!-- Content Engine -->
+    <!-- Main Application Body -->
     <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
         
-        <!-- Interactive Form -->
+        <!-- Left Side: Interactive Configurator -->
         <div id="settingsList" class="flex-1 h-full overflow-y-auto p-6 md:p-10 bg-slate-950">
             <div id="loader" class="flex flex-col items-center justify-center h-full space-y-6">
                 <div class="w-20 h-20 border-8 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                 <div class="text-center">
                     <p class="text-blue-400 text-2xl font-black uppercase tracking-widest loading-pulse">Syncing Master Database</p>
-                    <p class="text-slate-500 text-lg mt-2">Initializing structure mapping...</p>
+                    <p class="text-slate-500 text-lg mt-2">Detecting Structure Headers...</p>
                 </div>
             </div>
         </div>
 
-        <!-- Result Matrix -->
+        <!-- Right Side: Result Output -->
         <div class="w-full lg:w-[550px] lg:h-full h-96 bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col shadow-2xl shrink-0">
             <div class="p-6 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
                 <h2 class="text-sm font-black uppercase tracking-widest text-slate-400 flex items-center gap-3">
@@ -114,13 +114,13 @@
                 </button>
             </div>
             <div class="flex-1 p-6 overflow-hidden flex flex-col bg-slate-950/50">
-                <textarea id="iniResult" readonly class="flex-1 w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-6 font-mono text-sm md:text-base text-green-400 outline-none resize-none leading-relaxed shadow-inner scroll-smooth" placeholder="Modify parameters or import a server file to generate the configuration delta..."></textarea>
+                <textarea id="iniResult" readonly class="flex-1 w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-6 font-mono text-sm md:text-base text-green-400 outline-none resize-none leading-relaxed shadow-inner scroll-smooth" placeholder="Modify settings to generate your custom GameUserSettings.ini block..."></textarea>
                 <div class="mt-6 p-6 bg-slate-800/50 rounded-2xl border-2 border-slate-700 hidden lg:block">
                     <div class="flex items-center gap-3 mb-3">
                         <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <p class="text-sm text-blue-400 font-black uppercase tracking-wider">Deployment Guide</p>
+                        <p class="text-sm text-blue-400 font-black uppercase tracking-wider">Deployment Instructions</p>
                     </div>
-                    <p class="text-sm text-slate-400 leading-relaxed font-medium">1. Tune settings to generate the delta block.<br>2. Copy the resulting text.<br>3. Paste into <span class="text-blue-300 font-bold">GameUserSettings.ini</span> under your existing <span class="text-slate-100 font-bold">[CybersStructures]</span> header.</p>
+                    <p class="text-sm text-slate-400 leading-relaxed font-medium">1. Adjust settings to generate the INI block.<br>2. Copy the text using the button above.<br>3. Paste under the <span class="text-slate-100 font-bold">[CybersStructures]</span> header in your server files.</p>
                 </div>
             </div>
         </div>
@@ -130,28 +130,6 @@
         const SHEET_ID = '1-gRdLIO918EoxvcQvJBLWmbY8_BbfjFsuKS3whcMDbs';
         const GID = '687105475';
         const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
-
-        const VALID_HEADERS = [
-            "Air Conditioner", "AmmoBox", "AutoCrafter", "Beehive", "Beer Barrel", "Blade Wasp", 
-            "Blueprint Maker", "Bookshelf", "Bunk Bed", "Campfire", "Ceiling Repulser", "Charge Injector", 
-            "Charge Station", "ChemistryBench", "Cloning Chamber", "CompostBin", "Converter", "CookingPot", 
-            "Crafting Station", "CropPlot Large", "CropPlot Medium", "CropPlot Small", "Cryo Fridge", 
-            "Dedicated Interface", "Dedicated Storage", "Dedicated Storage Intake", "Dino Mind Wipe", 
-            "Egg Incubator", "Element Catalyzer", "Fabricator", "Farmer", "Feeding Trough", "Fireplace", 
-            "Forge", "Fridge", "Gacha Gavager", "Gardener", "Gas Collector", "Gene Storage", "Generator", 
-            "Global", "Hatchery", "Header Name", "Healing Station", "Hitching post", "Hitching Post Tek", 
-            "Incinerator", "Industrial Cooker", "Industrial Forge", "Industrial Grill", "Industrial Grinder", 
-            "Item Collector", "ItemAggregator", "ItemTranslocator", "Large Storage", "Metal BookShelf", 
-            "Metal Storage", "Metal Water Tap", "MiniVault", "Mortar and Pestle", "MultiTool", "Mutator", 
-            "Nanny", "Oil Pump", "OmniTool", "Pod Gun", "Preserving Bin", "Propagator", "Simple Bed", 
-            "Sleeping Bag", "Special Mind Wipe", "Standing Torch", "Stone Water Tap", "StorageBoxSmall", 
-            "Tame Grinder", "Tek Bed", "Tek Chembench", "Tek Cloning Terminal", "Tek Cooking Pot", 
-            "Tek Crop Plot", "Tek Forcefield", "Tek Forge", "Tek Fridge", "Tek Generator", "Tek Light", 
-            "Tek Stove", "Tek Transmitter", "Tek Trough", "TekReplicator", "TekStorage", "TekTreeSapTap", 
-            "Tesla Coil", "TransferControlUnit", "Transmutator", "Tree Sap Tap", "Tribe Tower", 
-            "Tribute Terminal", "Turret Auto", "Turret Ballista", "Turret Catapult", "Turret Heavy", 
-            "Turret MiniGun", "Turret Rocket", "Turret Tek", "Vault", "Vivarium", "Wall Torch", "Wind Turbine"
-        ].map(h => h.toLowerCase());
 
         let fullData = [];
         let state = {};
@@ -168,6 +146,7 @@
             try {
                 const response = await fetch(SHEET_URL);
                 const text = await response.text();
+                // JSONP handling
                 const json = JSON.parse(text.substr(47).slice(0, -2));
                 
                 const rows = json.table.rows;
@@ -182,52 +161,57 @@
 
                     if (!colA) return;
 
-                    const colALower = colA.toLowerCase();
+                    const lowerColA = colA.toLowerCase();
+                    
+                    // Filter out spreadsheet metadata
+                    if (lowerColA === "header name" || lowerColA === "cybersstructures") return;
 
-                    if (VALID_HEADERS.includes(colALower)) {
+                    // DYNAMIC HEADER DETECTION LOGIC
+                    // A row is a Category Header if it contains no equals sign AND lacks a description in column B
+                    if (!colA.includes("=") && !colB) {
                         currentCategoryName = colA.toUpperCase();
                         return;
                     }
 
-                    if (colB || colA.includes("=")) {
-                        let key = colA;
-                        let defValueString = "";
+                    // Parse Config Parameters
+                    let key = colA;
+                    let defValueString = "";
 
-                        if (colA.includes("=")) {
-                            const parts = colA.split("=");
-                            key = parts[0].trim();
-                            defValueString = parts[1].trim();
-                        }
-
-                        let type = 'num';
-                        let parsedDef = defValueString;
-                        const lowerDef = defValueString.toLowerCase();
-
-                        if (lowerDef === 'true' || lowerDef === 'false') {
-                            type = 'bool';
-                            parsedDef = (lowerDef === 'true');
-                        } else if (defValueString === "" || isNaN(defValueString)) {
-                            type = 'text';
-                        } else {
-                            parsedDef = parseFloat(defValueString);
-                        }
-
-                        if (!categoriesMap[currentCategoryName]) {
-                            categoriesMap[currentCategoryName] = { category: currentCategoryName, settings: [] };
-                        }
-
-                        categoriesMap[currentCategoryName].settings.push({ 
-                            key, 
-                            type, 
-                            def: parsedDef, 
-                            desc: colB || "Official documentation pending for this parameter." 
-                        });
-
-                        state[key] = parsedDef;
-                        defaultValues[key] = parsedDef;
+                    if (colA.includes("=")) {
+                        const parts = colA.split("=");
+                        key = parts[0].trim();
+                        defValueString = parts.slice(1).join("=").trim();
                     }
+
+                    let type = 'num';
+                    let parsedDef = defValueString;
+                    const lowerDef = defValueString.toLowerCase();
+
+                    if (lowerDef === 'true' || lowerDef === 'false') {
+                        type = 'bool';
+                        parsedDef = (lowerDef === 'true');
+                    } else if (defValueString === "" || isNaN(defValueString)) {
+                        type = 'text';
+                    } else {
+                        parsedDef = parseFloat(defValueString);
+                    }
+
+                    if (!categoriesMap[currentCategoryName]) {
+                        categoriesMap[currentCategoryName] = { category: currentCategoryName, settings: [] };
+                    }
+
+                    categoriesMap[currentCategoryName].settings.push({ 
+                        key, 
+                        type, 
+                        def: parsedDef, 
+                        desc: colB || "Additional configuration details are currently being finalized." 
+                    });
+
+                    state[key] = parsedDef;
+                    defaultValues[key] = parsedDef;
                 });
 
+                // Sort categories ensuring GLOBAL stays at top
                 fullData = Object.values(categoriesMap).sort((a, b) => {
                     const aIsGlobal = a.category.includes("GLOBAL");
                     const bIsGlobal = b.category.includes("GLOBAL");
@@ -238,8 +222,8 @@
 
                 render();
             } catch (error) {
-                console.error("Data Sync Error:", error);
-                document.getElementById('loader').innerHTML = `<p class="text-red-500 font-black text-xl">Connection to Master Database Failed.</p>`;
+                console.error("Critical Sync Failure:", error);
+                document.getElementById('loader').innerHTML = `<p class="text-red-500 font-black text-xl">System failed to establish connection with Master Database.</p>`;
             }
         }
 
@@ -331,6 +315,7 @@
             let changed = false;
             const sortedKeys = Object.keys(state).sort();
             sortedKeys.forEach(key => {
+                // Only include values that differ from defaults to keep delta clean
                 if (state[key] !== defaultValues[key]) {
                     out += `${key}=${state[key]}\n`;
                     changed = true;
@@ -364,18 +349,18 @@
             document.execCommand('copy');
             const btn = document.getElementById('copyBtn');
             const old = btn.innerHTML;
-            btn.textContent = 'Copied Delta!';
+            btn.textContent = 'Copied Configuration!';
             btn.classList.replace('bg-blue-600', 'bg-green-600');
             setTimeout(() => {
                 btn.innerHTML = old;
                 btn.classList.replace('bg-green-600', 'bg-blue-600');
-            }, 1500);
+            }, 2000);
         }
 
         function resetToDefaults() {
             for (let key in state) state[key] = defaultValues[key];
             render();
-            showToast("Workspace Reinitialized: All settings reverted to defaults.");
+            showToast("System Reinitialized: Workspace cleared to mod defaults.");
         }
 
         function handleFileUpload(event) {
@@ -406,13 +391,14 @@
                 }
                 if (matches > 0) {
                     render();
-                    showToast(`Import Success: Synced ${matches} configuration parameters.`);
-                } else showToast("No [CybersStructures] section identified in the file.");
+                    showToast(`Import Success: Synced ${matches} user-defined settings.`);
+                } else showToast("No valid [CybersStructures] configuration block found.");
                 document.getElementById('iniUpload').value = "";
             };
             reader.readAsText(file);
         }
 
+        // Real-time Search Logic
         document.getElementById('searchInput').oninput = (e) => {
             const term = e.target.value.toLowerCase();
             document.querySelectorAll('.config-row').forEach(row => {
