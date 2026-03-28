@@ -1,126 +1,206 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cybers Structures Pro Configurator</title>
+    <title>Cybers Structures Pro Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Teko:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        :root {
+            --ark-cyan: #5ce1e6;
+            --ark-cyan-dim: rgba(92, 225, 230, 0.4);
+            --ark-cyan-dark: #113a42;
+            --ark-bg-base: #02080a;
+            --ark-bg-panel: rgba(6, 22, 28, 0.88);
+            --ark-border-glow: 0 0 10px rgba(92, 225, 230, 0.3);
+            --ark-text-shadow: 0 0 8px rgba(92, 225, 230, 0.6);
+        }
+
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background-color: var(--ark-bg-base);
+            /* Hexagonal Tech Overlay */
+            background-image: 
+                radial-gradient(circle at center, transparent 0%, rgba(2, 8, 10, 0.95) 100%),
+                url("data:image/svg+xml,%3Csvg width='60' height='104' viewBox='0 0 60 104' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 26L30 41L0 26V11L30-4L60 11V26zM30 95L0 80V65L30 50L60 65V80L30 95z' fill='%235ce1e6' fill-opacity='0.03' fill-rule='evenodd'/%3E");
+            background-attachment: fixed;
+            color: #e2f8fa;
+            overflow-x: hidden;
+        }
+
+        .ark-header-font { font-family: 'Teko', sans-serif; text-transform: uppercase; }
         
+        /* Tactical Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.4); }
+        ::-webkit-scrollbar-thumb { background: var(--ark-cyan-dim); border: 1px solid var(--ark-cyan); }
+
+        .ark-panel {
+            background: var(--ark-bg-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(92, 225, 230, 0.25);
+            box-shadow: var(--ark-border-glow);
+        }
+
+        .ark-btn {
+            background: rgba(17, 58, 66, 0.6);
+            border: 1px solid var(--ark-cyan);
+            color: var(--ark-cyan);
+            font-family: 'Teko', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.15s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .ark-btn:hover {
+            background: var(--ark-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--ark-cyan);
+        }
+        .ark-btn:active { transform: scale(0.98); }
+
+        .ark-input {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(92, 225, 230, 0.3);
+            color: #fff;
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+        .ark-input:focus { border-color: var(--ark-cyan); box-shadow: 0 0 8px rgba(92, 225, 230, 0.2); outline: none; }
+
+        /* Tactical Sliders */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
-            background: #3b82f6; cursor: pointer; margin-top: -7px; border: 2px solid #0f172a;
+            -webkit-appearance: none; height: 18px; width: 10px;
+            background: var(--ark-cyan); cursor: pointer; border: 1px solid #fff;
+            box-shadow: 0 0 5px var(--ark-cyan);
         }
         input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px; background: #1e293b; border-radius: 2px;
+            height: 4px; background: rgba(0,0,0,0.8); border: 1px solid rgba(92, 225, 230, 0.2);
         }
-        
-        .tooltip-container { position: relative; cursor: help; }
-        .tooltip-text {
-            visibility: hidden; position: absolute; z-index: 100; bottom: 125%; left: 0;
-            width: 280px; background-color: #1e293b; color: #fff; padding: 14px;
-            border-radius: 8px; font-size: 13px; border: 1px solid #3b82f6;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6); opacity: 0; transition: opacity 0.2s;
-            pointer-events: none; line-height: 1.6; font-family: sans-serif;
-        }
-        @media (min-width: 768px) { .tooltip-text { width: 380px; } }
-        .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
 
-        .config-row:hover { background-color: rgba(59, 130, 246, 0.05); }
-        .loading-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-        body { line-height: 1.2; overflow-x: hidden; }
+        /* Blocky Inventory Checkbox */
+        .ark-check-container {
+            width: 26px; height: 26px; background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--ark-cyan-dim); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ark-check-mark {
+            width: 16px; height: 16px; background: transparent;
+        }
+        input:checked + .ark-check-mark { background: var(--ark-cyan); box-shadow: 0 0 10px var(--ark-cyan); }
+
+        .config-row { border-bottom: 1px solid rgba(92, 225, 230, 0.08); transition: background 0.2s; }
+        .config-row:hover { background: rgba(92, 225, 230, 0.04); }
+
+        .tooltip-text {
+            visibility: hidden; position: absolute; z-index: 100; bottom: 130%; left: 0;
+            width: 340px; background: rgba(2, 15, 20, 0.95); color: #fff; padding: 12px;
+            border: 1px solid var(--ark-cyan); opacity: 0; transition: opacity 0.2s;
+            pointer-events: none; border-left: 4px solid var(--ark-cyan);
+        }
+        .tooltip-trigger:hover .tooltip-text { visibility: visible; opacity: 1; }
+
+        .loading-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         #toast {
-            position: fixed; top: 24px; right: -450px; transition: right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 10000; display: flex; align-items: center; gap: 14px;
-            background: #1e293b; border-left: 5px solid #3b82f6; padding: 18px 28px;
-            border-radius: 6px; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            position: fixed; top: 30px; right: -500px; transition: right 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 10000; background: var(--ark-bg-panel); border: 1px solid var(--ark-cyan);
+            border-left: 8px solid var(--ark-cyan); padding: 20px 30px; box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
-        #toast.show { right: 24px; }
+        #toast.show { right: 30px; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-200 h-screen flex flex-col font-sans">
+<body class="h-screen flex flex-col p-2 md:p-4 gap-3">
 
-    <div id="toast" class="text-sm font-bold text-slate-100">
-        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <span id="toastMessage">Updating System</span>
+    <div id="toast" class="ark-header-font text-2xl tracking-widest text-white shadow-2xl">
+        <span id="toastMessage">DATA STREAM INITIALIZED</span>
     </div>
 
     <input type="file" id="iniUpload" accept=".ini,.txt" class="hidden" onchange="handleFileUpload(event)">
 
-    <!-- Pro Header Section -->
-    <header class="bg-slate-900 border-b border-slate-800 p-5 md:p-8 flex flex-col xl:flex-row justify-between items-center shrink-0 shadow-xl gap-6">
-        <div class="flex items-center gap-6 w-full xl:w-auto justify-center xl:justify-start">
-            <div class="bg-blue-600 p-3 md:p-4 rounded-2xl shadow-2xl shadow-blue-900/40">
-                <svg class="w-8 h-8 md:w-10 md:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+    <!-- HUD Header -->
+    <header class="ark-panel p-4 flex flex-col xl:flex-row justify-between items-center gap-6 relative z-10 shrink-0">
+        <div class="flex items-center gap-5">
+            <div class="bg-black/50 p-3 border-2 border-[var(--ark-cyan)] shadow-[0_0_15px_rgba(92,225,230,0.2)]">
+                <svg class="w-10 h-10 text-[var(--ark-cyan)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
             </div>
-            <div class="text-center xl:text-left">
-                <h1 class="text-3xl md:text-5xl font-black tracking-tighter leading-none text-white italic">CYBERS STRUCTURES</h1>
-                <p class="text-sm md:text-base text-blue-400 uppercase font-bold tracking-[0.3em] mt-2">Live Configuration Engine | Pro Tier</p>
+            <div>
+                <h1 class="ark-header-font text-4xl md:text-6xl text-[var(--ark-cyan)] tracking-widest leading-none drop-shadow-[0_0_10px_rgba(92,225,230,0.4)]">CYBERS STRUCTURES</h1>
+                <p class="ark-header-font text-xl text-[var(--ark-cyan-dim)] tracking-[0.3em] leading-none mt-1">ADVANCED TERMINAL // V1.3</p>
             </div>
         </div>
 
-        <div class="flex flex-wrap justify-center xl:justify-end gap-3 w-full xl:w-auto">
-            <input type="text" id="searchInput" placeholder="Search parameters..." class="bg-slate-800 border-2 border-slate-700 text-base px-6 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none w-full md:w-80 text-center md:text-left transition-all hover:border-slate-500 font-medium">
+        <div class="flex flex-wrap items-center gap-4 w-full xl:w-auto">
+            <div class="relative w-full md:w-80">
+                <input type="text" id="searchInput" placeholder="SEARCH PARAMETERS..." class="ark-input ark-header-font text-xl px-4 py-3 w-full tracking-widest placeholder:opacity-30">
+                <div class="absolute right-3 top-3.5 text-[var(--ark-cyan-dim)]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
             
             <div class="flex gap-2 w-full md:w-auto">
-                <button onclick="document.getElementById('iniUpload').click()" class="bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 text-sm uppercase font-black px-6 py-3 rounded-xl border-2 border-blue-900/50 transition-all flex items-center gap-2 flex-1 justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    Import
-                </button>
-                
-                <button onclick="resetToDefaults()" class="bg-red-600/10 hover:bg-red-600/20 text-red-400 text-sm uppercase font-black px-6 py-3 rounded-xl border-2 border-red-900/50 transition-all flex items-center gap-2 flex-1 justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Reset
-                </button>
-            </div>
-
-            <div class="flex gap-2 w-full md:w-auto">
-                <button onclick="expandAll()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm uppercase font-bold px-6 py-3 rounded-xl border-2 border-slate-700 transition-all flex-1">Expand All</button>
-                <button onclick="collapseAll()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm uppercase font-bold px-6 py-3 rounded-xl border-2 border-slate-700 transition-all flex-1">Collapse All</button>
+                <button onclick="document.getElementById('iniUpload').click()" class="ark-btn px-8 py-3 text-2xl flex-1 shadow-lg">IMPORT</button>
+                <button onclick="resetToDefaults()" class="ark-btn px-8 py-3 text-2xl flex-1 !border-red-500 !text-red-500 hover:!bg-red-600 hover:!text-black hover:!shadow-[0_0_20px_rgba(239,68,68,0.5)]">RESET</button>
             </div>
         </div>
     </header>
 
-    <!-- Main Application Body -->
-    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+    <!-- Tactical Main Content -->
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden gap-4">
         
-        <!-- Left Side: Interactive Configurator -->
-        <div id="settingsList" class="flex-1 h-full overflow-y-auto p-6 md:p-10 bg-slate-950">
-            <div id="loader" class="flex flex-col items-center justify-center h-full space-y-6">
-                <div class="w-20 h-20 border-8 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                <div class="text-center">
-                    <p class="text-blue-400 text-2xl font-black uppercase tracking-widest loading-pulse">Syncing Master Database</p>
-                    <p class="text-slate-500 text-lg mt-2">Detecting Structure Headers...</p>
+        <!-- Parameter Access Panel -->
+        <div class="flex-1 ark-panel flex flex-col overflow-hidden">
+            <div class="bg-black/60 border-b border-[var(--ark-border-glow)] p-4 flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 bg-[var(--ark-cyan)]"></div>
+                    <h2 class="ark-header-font text-3xl text-[var(--ark-cyan)] tracking-widest">STRUCTURE SETTINGS</h2>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="expandAll()" class="ark-btn px-4 py-1 text-lg">EXPAND</button>
+                    <button onclick="collapseAll()" class="ark-btn px-4 py-1 text-lg">COLLAPSE</button>
+                </div>
+            </div>
+            
+            <div id="settingsList" class="flex-1 overflow-y-auto p-4 custom-scroll">
+                <div id="loader" class="flex flex-col items-center justify-center h-full gap-5">
+                    <div class="w-20 h-20 border-b-2 border-r-2 border-[var(--ark-cyan)] animate-spin"></div>
+                    <p class="ark-header-font text-4xl text-[var(--ark-cyan)] tracking-[0.2em] loading-pulse">DECRYPTING MASTER DATABASE</p>
                 </div>
             </div>
         </div>
 
-        <!-- Right Side: Result Output -->
-        <div class="w-full lg:w-[550px] lg:h-full h-96 bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col shadow-2xl shrink-0">
-            <div class="p-6 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
-                <h2 class="text-sm font-black uppercase tracking-widest text-slate-400 flex items-center gap-3">
-                    <span class="w-2 h-2 bg-blue-500 rounded-full animate-ping"></span>
-                    Live INI Delta
-                </h2>
-                <button onclick="copyINI()" id="copyBtn" class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-black uppercase px-6 py-3 rounded-xl transition-all flex items-center gap-2 shadow-xl shadow-blue-900/30">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                    Copy INI
-                </button>
-            </div>
-            <div class="flex-1 p-6 overflow-hidden flex flex-col bg-slate-950/50">
-                <textarea id="iniResult" readonly class="flex-1 w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-6 font-mono text-sm md:text-base text-green-400 outline-none resize-none leading-relaxed shadow-inner scroll-smooth" placeholder="Modify settings to generate your custom GameUserSettings.ini block..."></textarea>
-                <div class="mt-6 p-6 bg-slate-800/50 rounded-2xl border-2 border-slate-700 hidden lg:block">
-                    <div class="flex items-center gap-3 mb-3">
-                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <p class="text-sm text-blue-400 font-black uppercase tracking-wider">Deployment Instructions</p>
+        <!-- Output Terminal -->
+        <div class="w-full lg:w-[480px] flex flex-col gap-4 shrink-0">
+            <div class="flex-1 ark-panel flex flex-col overflow-hidden">
+                <div class="bg-black/60 border-b border-[var(--ark-border-glow)] p-4 flex justify-between items-center shrink-0">
+                    <div class="flex items-center gap-3">
+                        <span class="w-2 h-2 bg-red-500 block animate-pulse"></span>
+                        <h2 class="ark-header-font text-3xl text-[var(--ark-cyan)] tracking-widest">INI DELTA</h2>
                     </div>
-                    <p class="text-sm text-slate-400 leading-relaxed font-medium">1. Adjust settings to generate the INI block.<br>2. Copy the text using the button above.<br>3. Paste under the <span class="text-slate-100 font-bold">[CybersStructures]</span> header in your server files.</p>
+                    <button onclick="copyINI()" id="copyBtn" class="ark-btn px-5 py-1 text-xl">COPY OUTPUT</button>
+                </div>
+                
+                <div class="flex-1 p-4 flex flex-col">
+                    <textarea id="iniResult" readonly class="flex-1 w-full bg-black/40 border border-[var(--ark-cyan-dim)] p-5 font-mono text-sm text-[var(--ark-cyan)] outline-none resize-none shadow-inner leading-relaxed" placeholder="// SYSTEM AWAITING OVERRIDES..."></textarea>
+                </div>
+            </div>
+            
+            <!-- System Log -->
+            <div class="ark-panel p-5 bg-black/80">
+                <div class="flex items-center gap-2 mb-3 border-b border-[var(--ark-cyan-dim)] pb-2">
+                    <svg class="w-5 h-5 text-[var(--ark-cyan)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h3 class="ark-header-font text-2xl text-[var(--ark-cyan)] tracking-wider">TERMINAL STATUS</h3>
+                </div>
+                <div class="ark-header-font text-lg text-[var(--ark-cyan-dim)] space-y-2">
+                    <p>> CONNECTION: <span class="text-green-400">ENCRYPTED</span></p>
+                    <p>> TARGET: [CybersStructures]</p>
+                    <p>> READY FOR DEPLOYMENT</p>
                 </div>
             </div>
         </div>
@@ -139,44 +219,35 @@
             const toast = document.getElementById('toast');
             document.getElementById('toastMessage').textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 4000);
+            setTimeout(() => { toast.classList.remove('show'); }, 3500);
         }
 
         async function fetchSheetData() {
             try {
                 const response = await fetch(SHEET_URL);
                 const text = await response.text();
-                // JSONP handling
                 const json = JSON.parse(text.substr(47).slice(0, -2));
                 
                 const rows = json.table.rows;
                 const categoriesMap = {};
-                let currentCategoryName = "GLOBAL"; 
+                let currentCategoryName = "GLOBAL CONFIG"; 
 
                 rows.forEach(row => {
                     if (!row.c) return;
-                    
                     const colA = row.c[0] ? String(row.c[0].v).trim() : "";
                     const colB = row.c[1] ? String(row.c[1].v).trim() : "";
-
                     if (!colA) return;
-
-                    const lowerColA = colA.toLowerCase();
                     
-                    // Filter out spreadsheet metadata
-                    if (lowerColA === "header name" || lowerColA === "cybersstructures") return;
+                    if (colA.toLowerCase() === "header name" || colA.toLowerCase() === "cybersstructures") return;
 
-                    // DYNAMIC HEADER DETECTION LOGIC
-                    // A row is a Category Header if it contains no equals sign AND lacks a description in column B
+                    // Header Detection
                     if (!colA.includes("=") && !colB) {
                         currentCategoryName = colA.toUpperCase();
                         return;
                     }
 
-                    // Parse Config Parameters
                     let key = colA;
                     let defValueString = "";
-
                     if (colA.includes("=")) {
                         const parts = colA.split("=");
                         key = parts[0].trim();
@@ -201,29 +272,21 @@
                     }
 
                     categoriesMap[currentCategoryName].settings.push({ 
-                        key, 
-                        type, 
-                        def: parsedDef, 
-                        desc: colB || "Additional configuration details are currently being finalized." 
+                        key, type, def: parsedDef, desc: colB || "SYSTEM DATA CLASSIFIED. NO DESCRIPTION AVAILABLE." 
                     });
-
                     state[key] = parsedDef;
                     defaultValues[key] = parsedDef;
                 });
 
-                // Sort categories ensuring GLOBAL stays at top
                 fullData = Object.values(categoriesMap).sort((a, b) => {
-                    const aIsGlobal = a.category.includes("GLOBAL");
-                    const bIsGlobal = b.category.includes("GLOBAL");
-                    if (aIsGlobal && !bIsGlobal) return -1;
-                    if (!aIsGlobal && bIsGlobal) return 1;
+                    if (a.category.includes("GLOBAL")) return -1;
+                    if (b.category.includes("GLOBAL")) return 1;
                     return a.category.localeCompare(b.category);
                 });
 
                 render();
             } catch (error) {
-                console.error("Critical Sync Failure:", error);
-                document.getElementById('loader').innerHTML = `<p class="text-red-500 font-black text-xl">System failed to establish connection with Master Database.</p>`;
+                document.getElementById('loader').innerHTML = `<p class="ark-header-font text-3xl text-red-500">CONNECTION INTERRUPTED</p>`;
             }
         }
 
@@ -233,55 +296,59 @@
 
             fullData.forEach((cat) => {
                 const catDiv = document.createElement('div');
-                catDiv.className = 'mb-6 bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden cat-wrapper shadow-lg';
+                catDiv.className = 'mb-3 border border-[rgba(92,225,230,0.2)] bg-black/20 cat-wrapper';
 
                 const header = document.createElement('div');
-                header.className = 'p-5 md:p-6 bg-slate-800 cursor-pointer flex justify-between items-center hover:bg-slate-700 transition-all border-b-2 border-slate-700';
+                header.className = 'p-4 bg-black/40 cursor-pointer flex justify-between items-center hover:bg-[var(--ark-cyan-dark)]/40 transition-all border-b border-[rgba(92,225,230,0.1)]';
                 header.onclick = () => toggleCat(catDiv);
                 header.innerHTML = `
-                    <h3 class="text-base md:text-xl font-black uppercase tracking-widest text-blue-400 italic">${cat.category}</h3>
-                    <svg class="w-6 h-6 text-slate-500 transition-transform chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <div class="flex items-center gap-3">
+                        <div class="w-1 h-6 bg-[var(--ark-cyan)]"></div>
+                        <h3 class="ark-header-font text-2xl tracking-widest text-[var(--ark-cyan)]">${cat.category}</h3>
+                    </div>
+                    <svg class="w-6 h-6 text-[var(--ark-cyan-dim)] transition-transform chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 `;
                 catDiv.appendChild(header);
 
                 const body = document.createElement('div');
-                body.className = 'p-3 space-y-2 cat-content hidden';
+                body.className = 'p-2 space-y-1 cat-content hidden';
 
                 cat.settings.forEach(s => {
                     const row = document.createElement('div');
-                    row.className = 'flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl config-row transition-all border-b border-slate-800 last:border-0 gap-4 md:gap-0';
+                    row.className = 'flex flex-col md:flex-row md:items-center justify-between p-3 config-row gap-4';
                     row.dataset.key = s.key.toLowerCase();
 
                     const info = document.createElement('div');
-                    info.className = 'tooltip-container flex items-center gap-3 w-full md:w-auto';
+                    info.className = 'tooltip-trigger flex items-center gap-4 flex-1 relative';
                     info.innerHTML = `
-                        <span class="text-base font-mono text-slate-300 font-bold break-all">${s.key}</span>
-                        <div class="tooltip-text shadow-2xl border-2 border-blue-500/50">${s.desc}</div>
+                        <div class="w-2 h-2 bg-[var(--ark-cyan-dark)]"></div>
+                        <span class="text-lg font-bold tracking-wide">${s.key}</span>
+                        <div class="tooltip-text">${s.desc}</div>
                     `;
                     row.appendChild(info);
 
                     const control = document.createElement('div');
-                    control.className = 'flex items-center gap-6 w-full md:w-80 justify-start md:justify-end shrink-0';
+                    control.className = 'flex items-center gap-5 w-full md:w-80 shrink-0 md:justify-end';
 
                     if (s.type === 'bool') {
                         control.innerHTML = `
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" ${state[s.key] ? 'checked' : ''} onchange="updateVal('${s.key}', this.checked)">
-                                <div class="w-14 h-8 bg-slate-700 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:after:translate-x-6 shadow-xl border-2 border-slate-900"></div>
+                            <label class="ark-check-container">
+                                <input type="checkbox" class="sr-only" ${state[s.key] ? 'checked' : ''} onchange="updateVal('${s.key}', this.checked)">
+                                <div class="ark-check-mark"></div>
                             </label>
                         `;
                     } else if (s.type === 'num') {
                         const currentVal = state[s.key];
                         const def = typeof s.def === 'number' ? s.def : 0;
-                        const maxVal = def === 0 ? 100 : Math.max(100, def * 5);
-                        const step = def % 1 !== 0 ? 0.1 : 1;
+                        const maxVal = def === 0 ? 100 : Math.max(100, def * 4);
+                        const step = def % 1 !== 0 ? 0.01 : 1;
                         control.innerHTML = `
-                            <input type="range" class="flex-1 h-2 bg-slate-700 rounded-full cursor-pointer" min="0" max="${maxVal}" step="${step}" value="${currentVal}" oninput="syncNum(this, '${s.key}')">
-                            <input type="number" class="w-24 bg-slate-800 border-2 border-slate-700 text-base py-2 px-3 rounded-xl text-center font-mono focus:border-blue-500 outline-none transition-all font-bold" value="${currentVal}" step="${step}" oninput="syncRange(this, '${s.key}')">
+                            <input type="range" class="flex-1" min="0" max="${maxVal}" step="${step}" value="${currentVal}" oninput="syncNum(this, '${s.key}')">
+                            <input type="number" class="ark-input w-24 text-center py-1 font-bold text-xl" value="${currentVal}" step="${step}" oninput="syncRange(this, '${s.key}')">
                         `;
                     } else {
                         control.innerHTML = `
-                            <input type="text" class="w-full bg-slate-800 border-2 border-slate-700 text-base py-2 px-4 rounded-xl font-mono focus:border-blue-500 outline-none transition-all font-bold" value="${state[s.key]}" oninput="updateVal('${s.key}', this.value)">
+                            <input type="text" class="ark-input w-full py-1.5 px-3 text-lg font-bold" value="${state[s.key]}" oninput="updateVal('${s.key}', this.value)">
                         `;
                     }
 
@@ -313,16 +380,13 @@
         function updateINI() {
             let out = "[CybersStructures]\n";
             let changed = false;
-            const sortedKeys = Object.keys(state).sort();
-            sortedKeys.forEach(key => {
-                // Only include values that differ from defaults to keep delta clean
+            Object.keys(state).sort().forEach(key => {
                 if (state[key] !== defaultValues[key]) {
                     out += `${key}=${state[key]}\n`;
                     changed = true;
                 }
             });
-            const el = document.getElementById('iniResult');
-            el.value = changed ? out.trim() : "";
+            document.getElementById('iniResult').value = changed ? out.trim() : "";
         }
 
         function toggleCat(el) {
@@ -347,20 +411,13 @@
             if(!textarea.value) return;
             textarea.select();
             document.execCommand('copy');
-            const btn = document.getElementById('copyBtn');
-            const old = btn.innerHTML;
-            btn.textContent = 'Copied Configuration!';
-            btn.classList.replace('bg-blue-600', 'bg-green-600');
-            setTimeout(() => {
-                btn.innerHTML = old;
-                btn.classList.replace('bg-green-600', 'bg-blue-600');
-            }, 2000);
+            showToast("DATA SEQUENCE COPIED");
         }
 
         function resetToDefaults() {
             for (let key in state) state[key] = defaultValues[key];
             render();
-            showToast("System Reinitialized: Workspace cleared to mod defaults.");
+            showToast("TERMINAL PURGED // DEFAULTS RESTORED");
         }
 
         function handleFileUpload(event) {
@@ -391,14 +448,13 @@
                 }
                 if (matches > 0) {
                     render();
-                    showToast(`Import Success: Synced ${matches} user-defined settings.`);
-                } else showToast("No valid [CybersStructures] configuration block found.");
+                    showToast(`REMOTE DATA SYNCED: ${matches} NODES`);
+                } else showToast("ENCRYPTION ERROR: NO VALID SECTION");
                 document.getElementById('iniUpload').value = "";
             };
             reader.readAsText(file);
         }
 
-        // Real-time Search Logic
         document.getElementById('searchInput').oninput = (e) => {
             const term = e.target.value.toLowerCase();
             document.querySelectorAll('.config-row').forEach(row => {
@@ -417,4 +473,4 @@
         fetchSheetData();
     </script>
 </body>
-</html>
+</html> -->
