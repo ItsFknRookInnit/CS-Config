@@ -105,7 +105,6 @@
             contain: content;
         }
 
-        /* FIXED TOOLTIP: Escapes stacking context */
         #globalTooltip {
             position: fixed;
             z-index: 99999;
@@ -227,7 +226,7 @@
                 const json = JSON.parse(match[1]);
                 const rows = json.table.rows;
                 const categoriesMap = {};
-                let currentCat = "GENERAL";
+                let currentCat = "SYSTEM";
 
                 rows.forEach(row => {
                     if (!row.c) return;
@@ -235,6 +234,9 @@
                     const valB = row.c[1] ? String(row.c[1].v).trim() : "";
                     
                     if (!valA || valA.toLowerCase().includes("header")) return;
+
+                    // Exclude any keys that match header text or app name to avoid "General" ghost fields
+                    if (valA.toLowerCase() === 'cybers structures' || valA.toLowerCase() === 'cybersstructures') return;
 
                     if (!valA.includes("=") && !valB) {
                         currentCat = valA.toUpperCase();
@@ -299,7 +301,6 @@
                     row.className = 'config-row flex flex-col md:flex-row md:items-center justify-between p-4 gap-4';
                     row.dataset.key = s.key.toLowerCase();
 
-                    // Setup Tooltip Listeners
                     const nameWrap = document.createElement('div');
                     nameWrap.className = 'flex-1 cursor-help';
                     nameWrap.innerHTML = `<span class="text-lg font-bold text-gray-200">${s.key}</span>`;
@@ -311,7 +312,6 @@
                     nameWrap.onmousemove = (e) => {
                         const x = e.clientX + 15;
                         const y = e.clientY + 15;
-                        // Prevent tooltip from overflowing screen
                         const spaceRight = window.innerWidth - x;
                         tooltipEl.style.left = spaceRight < 350 ? `${x - 340}px` : `${x}px`;
                         tooltipEl.style.top = `${y}px`;
@@ -350,6 +350,8 @@
         }
 
         function updateVal(key, val) {
+            // Explicitly prevent search bar ID or app name from entering the state
+            if (key === 'searchInput' || key === 'CybersStructures') return;
             state[key] = val;
             updateINI();
         }
@@ -357,8 +359,9 @@
         function updateINI() {
             let out = "[CybersStructures]\n";
             let changed = false;
+            // Filter out any unexpected search keys during generation
             Object.keys(state).sort().forEach(k => {
-                if (state[k] !== defaultValues[k]) {
+                if (k !== 'searchInput' && k !== 'CybersStructures' && state[k] !== defaultValues[k]) {
                     out += `${k}=${state[k]}\n`;
                     changed = true;
                 }
