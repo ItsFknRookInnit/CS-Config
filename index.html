@@ -105,13 +105,22 @@
             contain: content;
         }
 
-        .tooltip-text {
-            display: none; position: absolute; z-index: 1000; bottom: 120%; left: 0;
-            width: 300px; background: #010a0d; color: #fff; padding: 15px;
-            border: 1px solid var(--ark-cyan); border-left: 5px solid var(--ark-cyan);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        /* FIXED TOOLTIP: Escapes stacking context */
+        #globalTooltip {
+            position: fixed;
+            z-index: 99999;
+            pointer-events: none;
+            display: none;
+            max-width: 320px;
+            background: #010a0d;
+            color: #fff;
+            padding: 15px;
+            border: 1px solid var(--ark-cyan);
+            border-left: 5px solid var(--ark-cyan);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+            font-size: 14px;
+            line-height: 1.4;
         }
-        .tooltip-trigger:hover .tooltip-text { display: block; }
 
         #toast {
             position: fixed; top: 40px; right: -500px; transition: right 0.3s ease;
@@ -122,6 +131,8 @@
     </style>
 </head>
 <body class="p-4 gap-4">
+
+    <div id="globalTooltip"></div>
 
     <div id="toast" class="ark-header-font text-2xl tracking-widest text-white shadow-2xl">
         <span id="toastMessage">SYSTEM READY</span>
@@ -162,7 +173,7 @@
             <div id="settingsList" class="flex-1 overflow-y-auto p-4">
                 <div id="loader" class="flex flex-col items-center justify-center h-full gap-4">
                     <div class="w-12 h-12 border-4 border-[var(--ark-cyan)] border-t-transparent animate-spin"></div>
-                    <p class="ark-header-font text-2xl text-[var(--ark-cyan)] tracking-widest">LOADING DATABASE...</p>
+                    <p class="ark-header-font text-2xl text-[var(--ark-cyan)] tracking-widest">ESTABLISHING UPLINK...</p>
                 </div>
             </div>
         </div>
@@ -179,9 +190,9 @@
             <div class="ark-panel p-5">
                 <h3 class="ark-header-font text-xl text-[var(--ark-cyan)] border-b border-[var(--ark-cyan-dim)] mb-3 pb-1">TERMINAL LOG</h3>
                 <div class="font-mono text-xs text-[var(--ark-cyan-dim)] space-y-1">
-                    <p>> AUTHENTICATION: SUCCESS</p>
-                    <p>> STATUS: OPERATIONAL</p>
-                    <p>> LAYER ISOLATION: ACTIVE</p>
+                    <p id="log-auth">> AUTHENTICATION: SUCCESS</p>
+                    <p id="log-status">> STATUS: OPERATIONAL</p>
+                    <p id="log-layer">> LAYER ISOLATION: ACTIVE</p>
                 </div>
             </div>
         </div>
@@ -196,7 +207,9 @@
         let state = {};
         let defaultValues = {};
 
-        function showToast(msg, type = 'info') {
+        const tooltipEl = document.getElementById('globalTooltip');
+
+        function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMessage').textContent = msg;
             toast.classList.add('show');
@@ -206,8 +219,12 @@
         async function fetchSheetData() {
             try {
                 const response = await fetch(SHEET_URL);
+                if (!response.ok) throw new Error("Network Response Fail");
                 const text = await response.text();
-                const json = JSON.parse(text.substr(47).slice(0, -2));
+                const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+                if (!match) throw new Error("JSON Parse Error");
+                
+                const json = JSON.parse(match[1]);
                 const rows = json.table.rows;
                 const categoriesMap = {};
                 let currentCat = "GENERAL";
@@ -252,7 +269,8 @@
                 fullData = Object.values(categoriesMap);
                 render();
             } catch (e) {
-                document.getElementById('loader').innerHTML = '<p class="text-red-500">FAILED TO CONNECT TO DATABASE</p>';
+                console.error(e);
+                document.getElementById('loader').innerHTML = '<p class="text-red-500">UPLINK SYNCHRONIZATION FAILED</p>';
             }
         }
 
@@ -265,7 +283,7 @@
                 wrapper.className = 'mb-4 border border-[rgba(92,225,230,0.1)] bg-black/20 cat-block';
                 
                 const h = document.createElement('div');
-                h.className = 'p-4 bg-black/40 cursor-pointer hover:bg-[var(--ark-cyan-dark)]/30 flex justify-between items-center';
+                h.className = 'p-4 bg-black/40 cursor-pointer hover:bg-[var(--ark-cyan-dark)]/30 flex justify-between items-center transition-colors';
                 h.onclick = () => {
                     const content = wrapper.querySelector('.cat-content');
                     content.classList.toggle('hidden');
@@ -281,15 +299,33 @@
                     row.className = 'config-row flex flex-col md:flex-row md:items-center justify-between p-4 gap-4';
                     row.dataset.key = s.key.toLowerCase();
 
-                    row.innerHTML = `
-                        <div class="tooltip-trigger relative flex-1">
-                            <span class="text-lg font-bold text-gray-200">${s.key}</span>
-                            <div class="tooltip-text">${s.desc || 'No description available.'}</div>
-                        </div>
-                        <div class="flex items-center gap-4 w-full md:w-64 justify-end">
-                            ${renderControl(s)}
-                        </div>
-                    `;
+                    // Setup Tooltip Listeners
+                    const nameWrap = document.createElement('div');
+                    nameWrap.className = 'flex-1 cursor-help';
+                    nameWrap.innerHTML = `<span class="text-lg font-bold text-gray-200">${s.key}</span>`;
+                    
+                    nameWrap.onmouseenter = (e) => {
+                        tooltipEl.innerHTML = `<strong>${s.key}</strong><br><br>${s.desc || 'Protocol description not found.'}`;
+                        tooltipEl.style.display = 'block';
+                    };
+                    nameWrap.onmousemove = (e) => {
+                        const x = e.clientX + 15;
+                        const y = e.clientY + 15;
+                        // Prevent tooltip from overflowing screen
+                        const spaceRight = window.innerWidth - x;
+                        tooltipEl.style.left = spaceRight < 350 ? `${x - 340}px` : `${x}px`;
+                        tooltipEl.style.top = `${y}px`;
+                    };
+                    nameWrap.onmouseleave = () => {
+                        tooltipEl.style.display = 'none';
+                    };
+
+                    const controls = document.createElement('div');
+                    controls.className = 'flex items-center gap-4 w-full md:w-64 justify-end';
+                    controls.innerHTML = renderControl(s);
+
+                    row.appendChild(nameWrap);
+                    row.appendChild(controls);
                     body.appendChild(row);
                 });
 
