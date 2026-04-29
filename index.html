@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" id="root-html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,46 +17,47 @@
             --ark-bg-base: #02080a;
             --ark-bg-panel: rgba(6, 22, 28, 0.92);
             --ark-border-glow: 0 0 15px rgba(92, 225, 230, 0.2);
+            --text-main: #e2f8fa;
+        }
+
+        .light {
+            --ark-cyan: #0a4d50;
+            --ark-cyan-dim: rgba(10, 77, 80, 0.4);
+            --ark-cyan-dark: #7ab3a8;
+            --ark-bg-base: #95cfc2;
+            --ark-bg-panel: rgba(255, 255, 255, 0.85);
+            --ark-border-glow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            --text-main: #052224;
         }
 
         body {
             font-family: 'Roboto Condensed', sans-serif;
             background-color: var(--ark-bg-base);
             background-image: 
-                radial-gradient(circle at center, transparent 0%, rgba(2, 8, 10, 0.95) 100%),
+                radial-gradient(circle at center, transparent 0%, rgba(2, 8, 10, 0.05) 100%),
                 url("data:image/svg+xml,%3Csvg width='60' height='104' viewBox='0 0 60 104' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 26L30 41L0 26V11L30-4L60 11V26zM30 95L0 80V65L30 50L60 65V80L30 95z' fill='%235ce1e6' fill-opacity='0.03' fill-rule='evenodd'/%3E");
             background-attachment: fixed;
-            color: #e2f8fa;
-            overflow: hidden;
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s ease;
         }
 
         .ark-header-font { font-family: 'Teko', sans-serif; text-transform: uppercase; }
         
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.5); }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
         ::-webkit-scrollbar-thumb { background: var(--ark-cyan-dark); border: 1px solid var(--ark-cyan-dim); }
 
         .ark-panel {
             background: var(--ark-bg-panel);
             border: 1px solid rgba(92, 225, 230, 0.2);
             box-shadow: var(--ark-border-glow);
-            isolation: isolate;
             position: relative;
-            z-index: 1;
-        }
-
-        .ark-panel::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: inherit;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            z-index: -1;
-            pointer-events: none;
         }
 
         .ark-btn {
@@ -67,131 +68,180 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
             transition: all 0.1s ease;
+            white-space: nowrap;
         }
         .ark-btn:hover {
             background: var(--ark-cyan);
-            color: #000;
+            color: #fff;
             box-shadow: 0 0 20px var(--ark-cyan);
         }
+        .dark .ark-btn:hover { color: #000; }
 
         .ark-input {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(92, 225, 230, 0.3);
-            color: #fff;
+            background: rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--ark-cyan-dim);
+            color: var(--text-main);
             padding: 4px 12px;
         }
+        .dark .ark-input { background: rgba(0, 0, 0, 0.8); }
+
+        input[type=range] { -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 18px; width: 10px;
+            background: var(--ark-cyan); cursor: pointer; border: 1px solid #fff;
+            box-shadow: 0 0 5px var(--ark-cyan);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 4px; background: rgba(0, 0, 0, 0.1); border: 1px solid rgba(92, 225, 230, 0.2);
+        }
+        .dark input[type=range]::-webkit-slider-runnable-track { background: rgba(0,0,0,0.8); }
 
         .ark-check-container {
-            width: 24px; height: 24px;
+            width: 32px; height: 32px;
             background: #000;
             border: 1px solid var(--ark-cyan-dim);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            will-change: transform;
+            flex-shrink: 0;
         }
         .ark-check-mark {
-            width: 14px; height: 14px;
+            width: 18px; height: 18px;
             transition: background 0.1s;
         }
         input:checked + .ark-check-mark {
-            background: var(--ark-cyan);
+            background: var(--ark-cyan); 
             box-shadow: 0 0 10px var(--ark-cyan);
         }
 
         .config-row {
-            border-bottom: 1px solid rgba(92, 225, 230, 0.05);
-            contain: content;
+            border-bottom: 1px solid rgba(92, 225, 230, 0.1);
+            background: rgba(0, 0, 0, 0.05);
+            transition: background 0.2s;
         }
+        .config-row:hover { background: rgba(92, 225, 230, 0.04); }
 
-        #globalTooltip {
-            position: fixed;
-            z-index: 99999;
-            pointer-events: none;
-            display: none;
-            max-width: 320px;
-            background: #010a0d;
-            color: #fff;
-            padding: 15px;
-            border: 1px solid var(--ark-cyan);
-            border-left: 5px solid var(--ark-cyan);
+        .tooltip-text {
+            visibility: hidden; position: absolute; z-index: 100; bottom: 110%; right: 0;
+            width: 340px; background: #010a0d; color: #fff; padding: 12px;
+            border: 1px solid var(--ark-cyan); opacity: 0; transition: opacity 0.2s;
+            pointer-events: none; border-left: 4px solid var(--ark-cyan);
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
             font-size: 14px;
-            line-height: 1.4;
         }
+        .tooltip-trigger:hover .tooltip-text { visibility: visible; opacity: 1; }
 
         #toast {
-            position: fixed; top: 40px; right: -500px; transition: right 0.3s ease;
-            z-index: 9999; background: #05161c; border-left: 6px solid var(--ark-cyan);
-            padding: 20px 40px; border: 1px solid rgba(92, 225, 230, 0.5);
+            position: fixed; top: 20px; right: 20px; transform: translateX(120%);
+            transition: transform 0.3s ease; z-index: 10000; 
+            background: var(--ark-bg-panel); border-left: 6px solid var(--ark-cyan);
+            padding: 15px 30px; border: 1px solid var(--ark-cyan-dim);
         }
-        #toast.show { right: 40px; }
+        #toast.show { transform: translateX(0); }
+
+        .toggle-switch {
+            position: relative; display: inline-block;
+            width: 50px; height: 24px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--ark-cyan-dark);
+            transition: .4s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: "";
+            height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--ark-cyan); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        .terminal-log-content {
+            font-family: monospace;
+            font-size: 11px;
+            word-break: break-all;
+        }
     </style>
 </head>
-<body class="p-4 gap-4">
+<body class="p-2 md:p-4 gap-4">
 
-    <div id="globalTooltip"></div>
-
-    <div id="toast" class="ark-header-font text-2xl tracking-widest text-white shadow-2xl">
+    <div id="toast" class="ark-header-font text-xl tracking-widest">
         <span id="toastMessage">SYSTEM READY</span>
     </div>
 
-    <header class="ark-panel p-5 flex flex-col xl:flex-row justify-between items-center gap-6 shrink-0">
-        <div class="flex items-center gap-6">
-            <div class="border-2 border-[var(--ark-cyan)] p-2">
-                <svg class="w-10 h-10 text-[var(--ark-cyan)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+    <input type="file" id="iniUpload" accept=".ini,.txt" class="hidden" onchange="handleFileUpload(event)">
+
+    <header class="ark-panel p-4 flex flex-col xl:flex-row justify-between items-center gap-4 shrink-0">
+        <div class="flex items-center gap-4">
+            <div class="border-2 border-[var(--ark-cyan)] p-1">
+                <svg class="w-8 h-8 text-[var(--ark-cyan)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
             </div>
             <div>
-                <h1 class="ark-header-font text-5xl text-[var(--ark-cyan)] tracking-widest leading-none">CYBERS STRUCTURES</h1>
-                <p class="ark-header-font text-lg text-[var(--ark-cyan-dim)] tracking-[0.4em] leading-none mt-1">ADVANCED TERMINAL INTERFACE</p>
+                <h1 class="ark-header-font text-3xl md:text-4xl text-[var(--ark-cyan)] tracking-widest leading-none">Cybers Structures Pro Terminal</h1>
+                <p class="ark-header-font text-xs text-[var(--ark-cyan-dim)] tracking-[0.3em] leading-none mt-1">ADVANCED CONFIGURATION // V1.5</p>
             </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-4 w-full xl:w-auto">
-            <input type="text" id="searchInput" placeholder="SEARCH SYSTEM..." class="ark-input ark-header-font text-xl px-4 py-3 w-full md:w-80 tracking-widest">
-            <button onclick="document.getElementById('iniUpload').click()" class="ark-btn px-10 py-3 text-2xl">IMPORT</button>
-            <button onclick="resetToDefaults()" class="ark-btn px-10 py-3 text-2xl !border-red-500 !text-red-500 hover:!bg-red-600 hover:!text-black">RESET</button>
+            <div class="flex items-center gap-2">
+                <span class="ark-header-font text-xs tracking-widest">LIGHT</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="modeToggle" onchange="toggleTheme()" checked>
+                    <span class="slider"></span>
+                </label>
+                <span class="ark-header-font text-xs tracking-widest">DARK</span>
+            </div>
+            <div class="relative w-full md:w-64">
+                <input type="text" id="searchInput" placeholder="SEARCH PARAMETERS..." class="ark-input ark-header-font text-lg px-4 py-2 w-full tracking-widest">
+            </div>
+            <button onclick="document.getElementById('iniUpload').click()" class="ark-btn px-6 py-2 text-xl flex-1 md:flex-none">IMPORT</button>
+            <button onclick="resetToDefaults()" class="ark-btn px-6 py-2 text-xl flex-1 md:flex-none !border-red-500 !text-red-500 hover:!bg-red-600 hover:!text-white">RESET</button>
         </div>
     </header>
 
-    <input type="file" id="iniUpload" class="hidden" onchange="handleFileUpload(event)">
-
-    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden gap-4">
-        <div class="flex-1 ark-panel flex flex-col overflow-hidden">
-            <div class="bg-black/50 p-4 flex justify-between items-center border-b border-[var(--ark-cyan-dim)]">
-                <h2 class="ark-header-font text-3xl text-[var(--ark-cyan)] tracking-widest flex items-center gap-3">
-                    <span class="w-4 h-4 bg-[var(--ark-cyan)] inline-block"></span> STRUCTURE PROTOCOLS
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden gap-4 min-h-0">
+        
+        <div class="flex-[2] ark-panel flex flex-col overflow-hidden min-h-0">
+            <div class="bg-black/10 p-3 flex justify-between items-center border-b border-[var(--ark-cyan-dim)]">
+                <h2 class="ark-header-font text-2xl text-[var(--ark-cyan)] tracking-widest flex items-center gap-2">
+                    <span class="w-3 h-3 bg-[var(--ark-cyan)] inline-block"></span> STRUCTURE SETTINGS
                 </h2>
                 <div class="flex gap-2">
-                    <button onclick="expandAll()" class="ark-btn px-4 py-1 text-sm">EXPAND ALL</button>
-                    <button onclick="collapseAll()" class="ark-btn px-4 py-1 text-sm">COLLAPSE ALL</button>
+                    <button onclick="expandAll()" class="ark-btn px-3 py-1 text-xs">EXPAND ALL</button>
+                    <button onclick="collapseAll()" class="ark-btn px-3 py-1 text-xs">COLLAPSE ALL</button>
                 </div>
             </div>
             
-            <div id="settingsList" class="flex-1 overflow-y-auto p-4">
-                <div id="loader" class="flex flex-col items-center justify-center h-full gap-4">
-                    <div class="w-12 h-12 border-4 border-[var(--ark-cyan)] border-t-transparent animate-spin"></div>
-                    <p class="ark-header-font text-2xl text-[var(--ark-cyan)] tracking-widest">ESTABLISHING UPLINK...</p>
+            <div id="settingsList" class="flex-1 overflow-y-auto p-2 md:p-4 bg-black/5 custom-scroll">
+                <div id="loader" class="flex flex-col items-center justify-center h-64 gap-4">
+                    <div class="w-10 h-10 border-4 border-[var(--ark-cyan)] border-t-transparent animate-spin"></div>
+                    <p class="ark-header-font text-xl text-[var(--ark-cyan)] tracking-widest">DECRYPTING MASTER DATABASE...</p>
                 </div>
             </div>
         </div>
 
-        <div class="w-full lg:w-[450px] flex flex-col gap-4">
-            <div class="flex-1 ark-panel flex flex-col overflow-hidden">
-                <div class="bg-black/50 p-4 border-b border-[var(--ark-cyan-dim)] flex justify-between items-center">
-                    <h2 class="ark-header-font text-2xl text-[var(--ark-cyan)] tracking-widest">INI OUTPUT</h2>
-                    <button onclick="copyINI()" class="ark-btn px-4 py-1 text-lg">COPY</button>
+        <div class="flex-1 flex flex-col gap-4 min-h-0 shrink-0 lg:w-[480px]">
+            <div class="ark-panel p-4 shrink-0">
+                <h3 class="ark-header-font text-lg text-[var(--ark-cyan)] border-b border-[var(--ark-cyan-dim)] mb-2 pb-1">TERMINAL STATUS</h3>
+                <div class="terminal-log-content text-[var(--ark-cyan-dim)] space-y-1">
+                    <p>> CONNECTION: <span class="text-green-400">ENCRYPTED</span></p>
+                    <p>> TARGET: [CybersStructures]</p>
+                    <p>> DATA ISOLATION: ACTIVE</p>
+                    <p id="log-status">> STATUS: INITIALIZING...</p>
                 </div>
-                <textarea id="iniResult" readonly class="flex-1 w-full bg-black/20 p-5 font-mono text-sm text-[var(--ark-cyan)] outline-none resize-none" placeholder="[CybersStructures]"></textarea>
             </div>
-            
-            <div class="ark-panel p-5">
-                <h3 class="ark-header-font text-xl text-[var(--ark-cyan)] border-b border-[var(--ark-cyan-dim)] mb-3 pb-1">TERMINAL LOG</h3>
-                <div class="font-mono text-xs text-[var(--ark-cyan-dim)] space-y-1">
-                    <p id="log-auth">> AUTHENTICATION: SUCCESS</p>
-                    <p id="log-status">> STATUS: OPERATIONAL</p>
-                    <p id="log-layer">> LAYER ISOLATION: ACTIVE</p>
+
+            <div class="flex-1 ark-panel flex flex-col overflow-hidden min-h-0">
+                <div class="bg-black/10 p-3 border-b border-[var(--ark-cyan-dim)] flex justify-between items-center">
+                    <h2 class="ark-header-font text-xl text-[var(--ark-cyan)] tracking-widest">INI DELTA</h2>
+                    <button onclick="copyINI()" id="copyBtn" class="ark-btn px-4 py-1 text-lg">COPY OUTPUT</button>
+                </div>
+                
+                <div class="flex-1 p-4 flex flex-col">
+                    <textarea id="iniResult" readonly class="flex-1 w-full bg-black/5 border border-[var(--ark-cyan-dim)] p-4 font-mono text-sm text-[var(--ark-cyan)] outline-none resize-none leading-relaxed" placeholder="// SYSTEM AWAITING OVERRIDES..."></textarea>
                 </div>
             </div>
         </div>
@@ -206,152 +256,182 @@
         let state = {};
         let defaultValues = {};
 
-        const tooltipEl = document.getElementById('globalTooltip');
-
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMessage').textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            setTimeout(() => { toast.classList.remove('show'); }, 3500);
+        }
+
+        function toggleTheme() {
+            const html = document.getElementById('root-html');
+            const toggle = document.getElementById('modeToggle');
+            if (toggle.checked) {
+                html.classList.add('dark');
+                html.classList.remove('light');
+            } else {
+                html.classList.add('light');
+                html.classList.remove('dark');
+            }
         }
 
         async function fetchSheetData() {
             try {
                 const response = await fetch(SHEET_URL);
-                if (!response.ok) throw new Error("Network Response Fail");
                 const text = await response.text();
                 const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
-                if (!match) throw new Error("JSON Parse Error");
+                if (!match) throw new Error("Parse Fail");
                 
                 const json = JSON.parse(match[1]);
                 const rows = json.table.rows;
                 const categoriesMap = {};
-                let currentCat = "SYSTEM";
+                let currentCategoryName = "GLOBAL CONFIG"; 
+                let count = 0;
 
                 rows.forEach(row => {
                     if (!row.c) return;
-                    const valA = row.c[0] ? String(row.c[0].v).trim() : "";
-                    const valB = row.c[1] ? String(row.c[1].v).trim() : "";
+                    const colA = row.c[0] ? String(row.c[0].v).trim() : "";
+                    const colB = row.c[1] ? String(row.c[1].v).trim() : "";
+                    if (!colA) return;
                     
-                    if (!valA || valA.toLowerCase().includes("header")) return;
+                    if (colA.toLowerCase() === "header name" || colA.toLowerCase() === "cybersstructures") return;
 
-                    // Exclude any keys that match header text or app name to avoid "General" ghost fields
-                    if (valA.toLowerCase() === 'cybers structures' || valA.toLowerCase() === 'cybersstructures') return;
-
-                    if (!valA.includes("=") && !valB) {
-                        currentCat = valA.toUpperCase();
+                    if (!colA.includes("=") && !colB) {
+                        currentCategoryName = colA.toUpperCase();
                         return;
                     }
 
-                    let key = valA;
-                    let defStr = "";
-                    if (valA.includes("=")) {
-                        const parts = valA.split("=");
+                    let key = colA;
+                    let defValueString = "";
+                    if (colA.includes("=")) {
+                        const parts = colA.split("=");
                         key = parts[0].trim();
-                        defStr = parts.slice(1).join("=").trim();
+                        defValueString = parts.slice(1).join("=").trim();
                     }
 
                     let type = 'num';
-                    let parsed = defStr;
-                    if (defStr.toLowerCase() === 'true' || defStr.toLowerCase() === 'false') {
+                    let parsedDef = defValueString;
+                    const lowerDef = defValueString.toLowerCase();
+
+                    if (lowerDef === 'true' || lowerDef === 'false') {
                         type = 'bool';
-                        parsed = (defStr.toLowerCase() === 'true');
-                    } else if (defStr === "" || isNaN(defStr)) {
+                        parsedDef = (lowerDef === 'true');
+                    } else if (defValueString === "" || isNaN(defValueString)) {
                         type = 'text';
                     } else {
-                        parsed = parseFloat(defStr);
+                        parsedDef = parseFloat(defValueString);
                     }
 
-                    if (!categoriesMap[currentCat]) categoriesMap[currentCat] = { name: currentCat, settings: [] };
-                    categoriesMap[currentCat].settings.push({ key, type, def: parsed, desc: valB });
-                    state[key] = parsed;
-                    defaultValues[key] = parsed;
+                    if (!categoriesMap[currentCategoryName]) {
+                        categoriesMap[currentCategoryName] = { category: currentCategoryName, settings: [] };
+                    }
+
+                    categoriesMap[currentCategoryName].settings.push({ 
+                        key, type, def: parsedDef, desc: colB || "SYSTEM DATA CLASSIFIED. NO DESCRIPTION AVAILABLE." 
+                    });
+                    state[key] = parsedDef;
+                    defaultValues[key] = parsedDef;
+                    count++;
                 });
 
-                fullData = Object.values(categoriesMap);
+                fullData = Object.values(categoriesMap).sort((a, b) => {
+                    if (a.category.includes("GLOBAL")) return -1;
+                    if (b.category.includes("GLOBAL")) return 1;
+                    return a.category.localeCompare(b.category);
+                });
+
+                document.getElementById('log-status').textContent = `> STATUS: READY. ${count} PARAMETERS LOADED`;
                 render();
-            } catch (e) {
-                console.error(e);
-                document.getElementById('loader').innerHTML = '<p class="text-red-500">UPLINK SYNCHRONIZATION FAILED</p>';
+            } catch (error) {
+                document.getElementById('loader').innerHTML = `<p class="ark-header-font text-2xl text-red-500">CONNECTION INTERRUPTED</p>`;
             }
         }
 
         function render() {
-            const list = document.getElementById('settingsList');
-            list.innerHTML = '';
+            const container = document.getElementById('settingsList');
+            container.innerHTML = '';
 
-            fullData.forEach(cat => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'mb-4 border border-[rgba(92,225,230,0.1)] bg-black/20 cat-block';
-                
-                const h = document.createElement('div');
-                h.className = 'p-4 bg-black/40 cursor-pointer hover:bg-[var(--ark-cyan-dark)]/30 flex justify-between items-center transition-colors';
-                h.onclick = () => {
-                    const content = wrapper.querySelector('.cat-content');
-                    content.classList.toggle('hidden');
-                };
-                h.innerHTML = `<span class="ark-header-font text-2xl text-[var(--ark-cyan)] tracking-widest">${cat.name}</span>`;
-                wrapper.appendChild(h);
+            fullData.forEach((cat) => {
+                const catDiv = document.createElement('div');
+                catDiv.className = 'mb-4 border border-[var(--ark-cyan-dim)] bg-black/10 cat-wrapper';
+
+                const header = document.createElement('div');
+                header.className = 'p-3 bg-black/20 cursor-pointer flex justify-between items-center border-b border-[var(--ark-cyan-dim)]';
+                header.onclick = () => toggleCat(catDiv);
+                header.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="ark-header-font text-xl text-[var(--ark-cyan)] tracking-widest">${cat.category}</span>
+                    </div>
+                    <svg class="w-5 h-5 text-[var(--ark-cyan-dim)] transition-transform chevron rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                `;
+                catDiv.appendChild(header);
 
                 const body = document.createElement('div');
-                body.className = 'cat-content hidden';
+                body.className = 'cat-content';
 
                 cat.settings.forEach(s => {
                     const row = document.createElement('div');
-                    row.className = 'config-row flex flex-col md:flex-row md:items-center justify-between p-4 gap-4';
+                    row.className = 'flex flex-col md:flex-row md:items-center justify-between p-3 config-row gap-4';
                     row.dataset.key = s.key.toLowerCase();
 
-                    const nameWrap = document.createElement('div');
-                    nameWrap.className = 'flex-1 cursor-help';
-                    nameWrap.innerHTML = `<span class="text-lg font-bold text-gray-200">${s.key}</span>`;
-                    
-                    nameWrap.onmouseenter = (e) => {
-                        tooltipEl.innerHTML = `<strong>${s.key}</strong><br><br>${s.desc || 'Protocol description not found.'}`;
-                        tooltipEl.style.display = 'block';
-                    };
-                    nameWrap.onmousemove = (e) => {
-                        const x = e.clientX + 15;
-                        const y = e.clientY + 15;
-                        const spaceRight = window.innerWidth - x;
-                        tooltipEl.style.left = spaceRight < 350 ? `${x - 340}px` : `${x}px`;
-                        tooltipEl.style.top = `${y}px`;
-                    };
-                    nameWrap.onmouseleave = () => {
-                        tooltipEl.style.display = 'none';
-                    };
+                    const info = document.createElement('div');
+                    info.className = 'tooltip-trigger flex items-center gap-4 flex-1 relative';
+                    info.innerHTML = `
+                        <div class="w-1.5 h-1.5 bg-[var(--ark-cyan-dark)]"></div>
+                        <span class="text-md font-bold tracking-wide">${s.key}</span>
+                        <div class="tooltip-text">${s.desc}</div>
+                    `;
+                    row.appendChild(info);
 
-                    const controls = document.createElement('div');
-                    controls.className = 'flex items-center gap-4 w-full md:w-64 justify-end';
-                    controls.innerHTML = renderControl(s);
+                    const control = document.createElement('div');
+                    control.className = 'flex items-center gap-3 w-full md:w-80 shrink-0 md:justify-end';
 
-                    row.appendChild(nameWrap);
-                    row.appendChild(controls);
+                    if (s.type === 'bool') {
+                        control.innerHTML = `
+                            <span class="hidden md:inline text-[10px] text-[var(--ark-cyan-dim)] uppercase tracking-tighter">Toggle</span>
+                            <label class="ark-check-container">
+                                <input type="checkbox" class="sr-only" ${state[s.key] ? 'checked' : ''} onchange="updateVal('${s.key}', this.checked)">
+                                <div class="ark-check-mark"></div>
+                            </label>
+                        `;
+                    } else if (s.type === 'num') {
+                        const currentVal = state[s.key];
+                        const def = typeof s.def === 'number' ? s.def : 0;
+                        const maxVal = def === 0 ? 100 : Math.max(100, def * 4);
+                        const step = def % 1 !== 0 ? 0.01 : 1;
+                        control.innerHTML = `
+                            <input type="range" class="flex-1" min="0" max="${maxVal}" step="${step}" value="${currentVal}" oninput="syncNum(this, '${s.key}')">
+                            <input type="number" class="ark-input w-24 text-center py-1 font-bold text-md" value="${currentVal}" step="${step}" oninput="syncRange(this, '${s.key}')">
+                        `;
+                    } else {
+                        control.innerHTML = `
+                            <input type="text" class="ark-input w-full py-1 px-3 text-md font-bold" value="${state[s.key]}" oninput="updateVal('${s.key}', this.value)">
+                        `;
+                    }
+
+                    row.appendChild(control);
                     body.appendChild(row);
                 });
 
-                wrapper.appendChild(body);
-                list.appendChild(wrapper);
+                catDiv.appendChild(body);
+                container.appendChild(catDiv);
             });
             updateINI();
+            
+            document.getElementById('modeToggle').checked = document.getElementById('root-html').classList.contains('dark');
         }
 
-        function renderControl(s) {
-            if (s.type === 'bool') {
-                return `
-                    <label class="ark-check-container">
-                        <input type="checkbox" class="hidden" ${state[s.key] ? 'checked' : ''} onchange="updateVal('${s.key}', this.checked)">
-                        <div class="ark-check-mark"></div>
-                    </label>
-                `;
-            } else if (s.type === 'num') {
-                return `<input type="number" class="ark-input w-full text-right font-bold" value="${state[s.key]}" oninput="updateVal('${s.key}', parseFloat(this.value))">`;
-            }
-            return `<input type="text" class="ark-input w-full font-bold" value="${state[s.key]}" oninput="updateVal('${s.key}', this.value)">`;
+        function syncNum(range, key) {
+            range.nextElementSibling.value = range.value;
+            updateVal(key, parseFloat(range.value));
+        }
+
+        function syncRange(num, key) {
+            num.previousElementSibling.value = num.value;
+            updateVal(key, parseFloat(num.value));
         }
 
         function updateVal(key, val) {
-            // Explicitly prevent search bar ID or app name from entering the state
-            if (key === 'searchInput' || key === 'CybersStructures') return;
             state[key] = val;
             updateINI();
         }
@@ -359,54 +439,77 @@
         function updateINI() {
             let out = "[CybersStructures]\n";
             let changed = false;
-            // Filter out any unexpected search keys during generation
-            Object.keys(state).sort().forEach(k => {
-                if (k !== 'searchInput' && k !== 'CybersStructures' && state[k] !== defaultValues[k]) {
-                    out += `${k}=${state[k]}\n`;
+            Object.keys(state).sort().forEach(key => {
+                if (state[key] !== defaultValues[key]) {
+                    out += `${key}=${state[key]}\n`;
                     changed = true;
                 }
             });
-            document.getElementById('iniResult').value = changed ? out.trim() : "[CybersStructures]";
+            document.getElementById('iniResult').value = changed ? out.trim() : "";
         }
 
-        function expandAll() { document.querySelectorAll('.cat-content').forEach(c => c.classList.remove('hidden')); }
-        function collapseAll() { document.querySelectorAll('.cat-content').forEach(c => c.classList.add('hidden')); }
+        function toggleCat(el) {
+            const content = el.querySelector('.cat-content');
+            const chev = el.querySelector('.chevron');
+            content.classList.toggle('hidden');
+            chev.classList.toggle('rotate-180');
+        }
 
-        function resetToDefaults() {
-            state = {...defaultValues};
-            render();
-            showToast("DEFAULTS RESTORED");
+        function expandAll() {
+            document.querySelectorAll('.cat-content').forEach(c => c.classList.remove('hidden'));
+            document.querySelectorAll('.chevron').forEach(c => c.classList.add('rotate-180'));
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.cat-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.chevron').forEach(c => c.classList.remove('rotate-180'));
         }
 
         function copyINI() {
-            const el = document.getElementById('iniResult');
-            el.select();
+            const textarea = document.getElementById('iniResult');
+            if(!textarea.value) return;
+            textarea.select();
             document.execCommand('copy');
-            showToast("CONFIG COPIED");
+            showToast("DATA SEQUENCE COPIED");
+        }
+
+        function resetToDefaults() {
+            for (let key in state) state[key] = defaultValues[key];
+            render();
+            showToast("TERMINAL PURGED // DEFAULTS RESTORED");
         }
 
         function handleFileUpload(event) {
             const file = event.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const lines = e.target.result.split('\n');
-                let found = 0;
-                lines.forEach(l => {
-                    if (l.includes('=')) {
-                        const [k, v] = l.split('=');
+                const contents = e.target.result;
+                const lines = contents.split(/\r?\n/);
+                let inSection = false;
+                let matches = 0;
+                for (let line of lines) {
+                    line = line.trim();
+                    if (line.toLowerCase() === '[cybersstructures]') { inSection = true; continue; }
+                    if (inSection && line.startsWith('[') && line.endsWith(']')) break;
+                    if (inSection && line.includes('=')) {
+                        const [k, ...v] = line.split('=');
                         const key = k.trim();
+                        const val = v.join('=').trim();
                         if (state.hasOwnProperty(key)) {
-                            const val = v.trim().toLowerCase();
-                            if (val === 'true') state[key] = true;
-                            else if (val === 'false') state[key] = false;
-                            else if (!isNaN(val)) state[key] = parseFloat(val);
-                            else state[key] = v.trim();
-                            found++;
+                            const type = typeof defaultValues[key];
+                            if (type === 'boolean') state[key] = (val.toLowerCase() === 'true');
+                            else if (type === 'number') state[key] = parseFloat(val) || 0;
+                            else state[key] = val;
+                            matches++;
                         }
                     }
-                });
-                render();
-                showToast(`IMPORTED ${found} PARAMETERS`);
+                }
+                if (matches > 0) {
+                    render();
+                    showToast(`REMOTE DATA SYNCED: ${matches} NODES`);
+                } else showToast("ENCRYPTION ERROR: NO VALID SECTION");
+                document.getElementById('iniUpload').value = "";
             };
             reader.readAsText(file);
         }
@@ -416,14 +519,20 @@
             document.querySelectorAll('.config-row').forEach(row => {
                 row.style.display = row.dataset.key.includes(term) ? 'flex' : 'none';
             });
-            document.querySelectorAll('.cat-block').forEach(cat => {
-                const hasMatch = Array.from(cat.querySelectorAll('.config-row')).some(r => r.style.display !== 'none');
-                cat.style.display = hasMatch ? 'block' : 'none';
-                if (term && hasMatch) cat.querySelector('.cat-content').classList.remove('hidden');
+            document.querySelectorAll('.cat-wrapper').forEach(cat => {
+                const hasVisible = Array.from(cat.querySelectorAll('.config-row')).some(r => r.style.display !== 'none');
+                cat.style.display = hasVisible ? 'block' : 'none';
+                if(term && hasVisible) {
+                    cat.querySelector('.cat-content').classList.remove('hidden');
+                    cat.querySelector('.chevron').classList.add('rotate-180');
+                }
             });
         };
 
-        fetchSheetData();
+        window.onload = () => {
+            fetchSheetData();
+            document.getElementById('modeToggle').checked = document.getElementById('root-html').classList.contains('dark');
+        };
     </script>
 </body>
 </html>
