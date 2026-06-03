@@ -1,73 +1,98 @@
-# Cybers Structures Pro Terminal v1.5
+# Cybers Structures Pro Terminal v1.6
 
-A high-performance live-syncing web utility designed for ARK Survival Ascended server administrators. This suite provides a professional-grade interface to import, audit, and generate configuration overrides for the **Cybers Structures** mod ecosystem.
+A high performance live syncing web utility designed for ARK Survival Ascended server administrators. This tool simplifies the management of the Cybers Structures mod configuration by providing a professional grade interface to import, edit, and generate configuration files.
 
-## 🛠 Pro-Tier Standardization
+## Live Data Sync
 
-This application follows the **Standardized Pro Terminal** architecture. It prioritizes data integrity and workspace efficiency by isolating technical logs from the primary configuration delta and providing adaptive environmental themes (Tactical Dark and Cyan Light).
+Unlike static configuration tools, this application uses a live sync engine. It fetches real time data directly from the official Cybers Structures configuration spreadsheet. 
 
-## 🚀 Live Data Sync
+When the mod creator adds new structures or changes default values, this application updates automatically without requiring a code redeploy.
 
-Unlike static configuration tools, this application uses a live-sync engine. It fetches real-time data directly from the official Cybers Structures master spreadsheet via a secure uplink. 
+## Key Features
 
-When the mod creator adds new structures or adjusts default parameters, this terminal updates automatically without requiring a manual update or code redeploy.
+*   **Tactical HUD Theme:** Completely overhauled visual style to mirror the native menus of ARK Survival Ascended. Features a custom hexagonal backdrop, cyan energy accents, blocky inputs, and condensed technical typography.
+*   **Smart Configuration Import:** Upload your existing server configuration file. The application will instantly parse your file, locate your custom settings, and update the visual interface to match your server state.
+*   **Delta Generation:** The output only shows values you have explicitly changed. This keeps your server files clean and prevents unnecessary overrides.
+*   **Instant Reset:** A dedicated button to clear your workspace and revert all values to their official defaults.
+*   **Live Tooltips:** Hover over any setting name to see the official description and constraints pulled directly from the mod documentation.
 
-## ✨ Key Features
+---
 
-* **Standardized HUD Interface**: Features the signature Pro-Terminal layout with a high-contrast "Tactical Dark" mode and a high-visibility "Cyan Light" mode (#95cfc2).
-* **Adaptive Theme Engine**: Features a persistent theme toggle allowing administrators to switch between low-light tactical operations and high-visibility data auditing.
-* **Intelligent Header Detection**: Scans the master spreadsheet to identify category headers. As the mod expands, the terminal automatically maps and organizes new structures into searchable sections.
-* **Secure Configuration Import**: Upload existing server files locally. The terminal parses the data on your machine to match your current server state to the visual sliders and toggles without external data transmission.
-* **Smart Delta Generation**: The **INI Delta** panel generates code only for parameters explicitly changed from their default state, ensuring your server files remain clean and optimized.
-* **Terminal Status Monitor**: A dedicated status log in the top-right quadrant provides real-time feedback on connection strength, decryption status, and input validation.
-* **Dynamic Tooltips**: Hover over any parameter to view official descriptions and constraints pulled directly from the mod’s technical documentation.
+## Usage Guide
 
-## 📖 Usage Guide
-
-### 1. Initializing the Terminal
-Launch the `index.html` file in a modern browser. The system will display a decryption loader while establishing a handshake with the master database.
+### 1. Loading the Terminal
+Simply open the index file in any modern web browser. The app will display a decryption loader while it fetches the latest parameters from the master database. All fields and categories are automatically sorted alphabetically for easy scanning.
 
 ### 2. Importing Existing Settings
-1. Click the **IMPORT** button in the header.
-2. Select your current configuration backup (INI or TXT).
-3. The terminal will sync the visual state with your file. A notification toast will confirm the number of nodes successfully mapped.
+1. Click the import button at the top of the screen.
+2. Select your current configuration backup file.
+3. The tool will process the file locally, find the required data block, and apply your custom settings. 
 
-### 3. Modifying Parameters
-* **Search**: Use the **SEARCH PARAMETERS** HUD to filter the list by key name.
-* **Adjust**: Use square toggles for booleans, range sliders for quick adjustments, or numerical inputs for precise calibration.
-* **View Management**: Use **EXPAND ALL** to reveal the full map or **COLLAPSE ALL** to focus on specific categories.
+> **Pro Tip:** You can click **SHOW MODIFIED** to instantly filter your view and audit your imported changes.
 
-### 4. Deploying to Server
-1. Monitor the **INI DELTA** panel for real-time code generation.
-2. Click **COPY OUTPUT** once adjustments are complete.
-3. Paste the generated block into your server's `GameUserSettings.ini` under the `[CybersStructures]` header.
+### 3. Finding and Adjusting Settings
+*   **Browse:** Use the category headers to find specific structures. Click a header to expand or collapse that section.
+*   **Search:** Use the search bar at the top right to filter by key name.
+*   **Adjust:**
+    *   Click the square switch for boolean toggles.
+    *   Move the slider for quick adjustments on numeric values.
+    *   Type directly into the input box for precise numerical control or text strings.
 
-## 📋 Changelog
+### 4. Deploying to Your Server
+1. Look at the **INI Output** panel on the right.
+2. Once you are satisfied with your changes, click **COPY**.
+3. Access your server files via FTP or your web host game panel.
+4. Open your `GameUserSettings.ini` file.
+5. Find the `[CybersStructures]` header. If it does not exist, create it at the bottom of the file.
+6. Paste your copied code block directly under that header, replacing any old values.
+7. Save the file and restart your server.
 
-### v1.5 (Current)
-* **UI Standardization**: Relocated the Terminal Log to the top-right quadrant to prioritize the INI Output workspace.
-* **Dual-Theme Engine**: Implemented the standardized "Cyan Light" and "Tactical Dark" themes.
-* **Protocol Hardening**: Refined state update logic to explicitly prevent UI control IDs from interfering with INI generation.
-* **Data Layer Isolation**: Improved input filtering to ensure search terms do not inject into the final configuration string.
-* **Logic Fix**: Resolved "Ghost Field" duplication caused by header name conflicts in the master spreadsheet.
+---
+
+## Technical Details
+
+*   **Framework:** Tailwind CSS via Content Delivery Network.
+*   **Data Source:** Google Visualization API JSON output.
+*   **Security:** The import feature uses the browser native file reader API. Your configuration files are processed entirely on your local machine and are never uploaded to any external server.
+*   **Deployment:** This is a single file application. No backend processing is required.
+
+---
+
+## Changelog
+
+### v1.6 (Current)
+*   **Heuristic Boolean Parsing:** Conducted a full bug sweep to identify fields lacking default values like `PropagatorDisableDinoMods`. Implemented a text scanner that reads the official mod descriptions for the words true, false, or toggle and forces the UI to render the correct checkbox control.
+*   **Alphabetical Auto Sort:** Reworked the data engine to automatically sort all categories and individual config fields alphabetically. This dramatically improves visual scanning speed.
+*   **Audit Mode:** Added the **SHOW MODIFIED** filter button, allowing admins to instantly collapse all untouched configs and review only the fields they have altered.
+
+### v1.5
+*   **Data Layer Isolation:** Implemented strict input filtering to prevent terminal search terms from being erroneously injected into the INI generation engine.
+*   **Ghost Field Removal:** Eliminated general category duplication and ghost fields caused by header name conflicts in the master spreadsheet.
+*   **Protocol Hardening:** Refined the state update logic to explicitly ignore UI control IDs during data synchronization.
+*   **Tooltip Stacking Fix:** Migrated tooltips to a fixed position global layer to ensure visibility over isolated panels.
 
 ### v1.4
-* **Graphical Overhaul**: Integrated the Tactical HUD theme with cyan energy accents and hexagonal backdrops.
-* **Typography**: Transitioned to Roboto Condensed and Teko for improved technical readability.
-* **Component Update**: Swapped rounded UI elements for rigid block controls and custom square checkboxes.
+*   Complete Pro Tier graphical overhaul integrating a Tactical HUD theme.
+*   Implemented cyan tinted glass panels and subtle hexagonal grid backgrounds.
+*   Replaced standard web fonts with Roboto Condensed and Teko to mirror in game text rendering.
+*   Swapped rounded inputs for rigid block controls including custom square checkboxes.
+*   Updated notification toasts with technical terminology and glowing accents.
 
 ### v1.3
-* Introduced dynamic header detection and automatic sorting to keep global configurations prioritized.
-* Enhanced search engine to automatically expand relevant categories upon match detection.
+*   Introduced dynamic header detection logic.
+*   Application now intelligently distinguishes between structure categories and individual configuration parameters directly from spreadsheet data.
+*   Enhanced search engine to automatically expand relevant categories when a match is found.
 
 ### v1.2
-* Launched the local file import engine and delta generation system.
-* Integrated notification toasts for real-time user feedback.
+*   Added the file import engine allowing users to upload existing text or configuration files.
+*   Implemented local parsing logic to read uploaded files and extract matching values.
+*   Created the delta generation system to ensure output only contains modified values.
 
 ### v1.1
-* Migrated from static arrays to a live fetch engine using the Google Visualization API.
+*   Replaced static data arrays with a live fetch engine connecting to the Google Visualization API.
 
-## ⚖ License & Credits
+---
 
-This tool is a community utility for the Cybers Structures mod. 
-ARK Survival Ascended is a trademark of Studio Wildcard.
+## License
+
+This tool is provided for use with the Cybers Structures modification. ARK Survival Ascended is a trademark of Studio Wildcard.
