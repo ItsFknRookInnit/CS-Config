@@ -1,0 +1,23 @@
+{
+  "name": "primary",
+  "version": "1.0.0",
+  "description": "A high performance live syncing web utility designed for ARK Survival Ascended server administrators. This tool simplifies the management of the Cybers Structures mod configuration by providing a professional grade interface to import, edit, and generate configuration files.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ItsFknRookInnit/CS-Config.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ItsFknRookInnit/CS-Config/issues"
+  },
+  "homepage": "https://github.com/ItsFknRookInnit/CS-Config#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
